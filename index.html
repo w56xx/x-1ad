@@ -167,12 +167,17 @@
         </div>
       </div>
 
-      <!-- شارة صغيرة توضح اسم الأغنية الخلفية -->
+      <!-- شارة الأغنية الخلفية مع زر تشغيل/إيقاف مباشر -->
       <div class="flex items-center justify-center mb-3">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-pink-300/20 text-xs text-pink-200/85">
-          <span>🎵</span>
-          <span>موسيقى الخلفية: Christina Perri - A Thousand Years</span>
-        </div>
+        <button
+          id="music-play-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/15 hover:bg-pink-500/25 border border-pink-300/30 text-xs text-pink-100 font-semibold transition cursor-pointer"
+        >
+          <span id="music-status-icon">🎵</span>
+          <span>Christina Perri - A Thousand Years</span>
+          <span id="music-status-text" class="text-pink-200/80">(تشغيل)</span>
+        </button>
       </div>
 
       <div class="text-center space-y-2">
@@ -323,116 +328,4 @@
                   type="button"
                   class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-pink-100 transition cursor-pointer"
                 >
-                  📋 نسخ العبارة
-                </button>
-                <button
-                  id="next-note-btn"
-                  type="button"
-                  class="px-4 py-1.5 rounded-xl bg-gradient-to-l from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-xs font-bold text-white transition cursor-pointer"
-                >
-                  قصاصة جديدة ✨
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- الفكرة 2: قفل كلمة السر لرسالة حب -->
-      <section id="panel-lock" class="idea-panel hidden space-y-6 pop-in">
-        <div class="border-b border-pink-300/15 pb-4">
-          <h2 class="text-xl sm:text-2xl font-extrabold text-pink-100">🔐 قفل الرسالة السرية</h2>
-          <p class="text-sm text-pink-200/75 mt-1">اكتبي كلمة السر أو الرمز البسيط حتى تفتح الرسالة المخبّأة لك.</p>
-        </div>
-
-        <div id="lock-screen" class="max-w-md mx-auto py-4 text-center space-y-5">
-          <div class="w-20 h-20 mx-auto rounded-3xl bg-pink-500/15 border border-pink-300/30 flex items-center justify-center text-4xl shadow-lg shadow-pink-500/15">
-            🗝️
-          </div>
-
-          <div class="space-y-1.5">
-            <h3 class="text-lg font-bold text-white">أدخلي كلمة السر</h3>
-            <p class="text-xs sm:text-sm text-pink-200/80">
-              تلميح: الرمز الافتراضي هو <span id="passcode-hint-badge" class="px-2 py-0.5 rounded-md bg-pink-500/25 text-pink-100 font-bold">0710</span> (ويمكنك تغييره من التخصيص السريع).
-            </p>
-          </div>
-
-          <form id="passcode-form" class="space-y-3">
-            <input
-              id="passcode-input"
-              type="text"
-              autocomplete="off"
-              placeholder="اكتبي الرمز هنا..."
-              class="w-full text-center text-lg tracking-widest font-bold px-4 py-3 rounded-2xl bg-black/35 border border-pink-300/25 text-white placeholder:text-pink-200/35 focus:outline-none focus:border-pink-400"
-            />
-            <p id="passcode-error" class="hidden text-xs font-semibold text-rose-300">
-              الرمز غير مطابق، جرّبي مرة ثانية 💕
-            </p>
-            <button
-              type="submit"
-              class="w-full py-3 rounded-2xl bg-gradient-to-l from-pink-500 via-rose-500 to-purple-500 hover:brightness-110 font-extrabold text-white shadow-lg shadow-pink-500/25 transition cursor-pointer"
-            >
-              فتح الرسالة ✨
-            </button>
-          </form>
-        </div>
-
-        <div id="unlocked-letter" class="hidden max-w-2xl mx-auto rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-rose-500/15 via-pink-500/10 to-amber-300/10 border border-pink-300/30 space-y-4 pop-in">
-          <div class="flex items-center justify-between">
-            <span class="px-3 py-1 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-emerald-200 text-xs font-bold">
-              🔓 تم فتح الرسالة بنجاح
-            </span>
-            <button
-              id="lock-again-btn"
-              type="button"
-              class="text-xs text-pink-200/75 hover:text-white underline cursor-pointer"
-            >
-              إعادة القفل
-            </button>
-          </div>
-
-          <h3 class="text-xl sm:text-2xl font-extrabold text-pink-100">
-            إلى <span class="her-name-inline">أجمل إنسانة</span>،
-          </h3>
-
-          <div class="space-y-3 text-sm sm:text-base text-pink-50/90 leading-loose">
-            <p>
-              يمكن تكون هذه صفحة صغيرة وبسيطة، بس حبيت أخلي فيها إحساس صادق يذكّرك قد إيش وجودك يفرق معي في كل يوم عادي وفي كل لحظة حلوة.
-            </p>
-            <p>
-              أحب ضحكتك، وأحب تفاصيلك، وأحب كيف إن الكلام معك يهدّي البال ويخلي الوقت يمر بدون ما نحس. مهما انشغلنا أو تباعدت المشاوير، تبقين الأقرب والأغلى دائماً.
-            </p>
-          </div>
-
-          <div class="pt-3 border-t border-white/10 flex items-center justify-between text-sm font-bold text-pink-200">
-            <span>بكل حب وامتنان ❤️</span>
-            <span>دائماً معك</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- الفكرة 3: أسباب تجعلني أحبك (بطاقات تقليب تفاعلية) -->
-      <section id="panel-reasons" class="idea-panel hidden space-y-6 pop-in">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-pink-300/15 pb-4">
-          <div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-pink-100">🃏 أسباب تخلي قلبي يختارك</h2>
-            <p class="text-sm text-pink-200/75 mt-1">اضغطي على البطاقة لتقليبها وقراءة السبب، أو تنقلي بين البطاقات.</p>
-          </div>
-          <span id="reason-progress" class="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-300/30 text-xs font-bold text-pink-100">
-            بطاقة 1 من 5
-          </span>
-        </div>
-
-        <div class="max-w-lg mx-auto py-2 space-y-5">
-          <div id="reason-flip-container" class="perspective-1000 cursor-pointer" role="button" tabindex="0" aria-label="اقلب البطاقة">
-            <div id="reason-flip-inner" class="flip-inner h-60 sm:h-64 w-full">
-              <!-- الوجه الأمامي -->
-              <div class="flip-face absolute inset-0 rounded-3xl p-6 bg-gradient-to-br from-pink-500/25 via-rose-500/15 to-purple-600/25 border border-pink-300/35 flex flex-col items-center justify-center text-center shadow-xl">
-                <span id="reason-emoji" class="text-5xl mb-3">🌸</span>
-                <span id="reason-title" class="text-xl sm:text-2xl font-extrabold text-white">السبب الأول</span>
-                <span class="mt-2 text-xs text-pink-200/80">اضغطي لقلب البطاقة</span>
-              </div>
-
-              <!-- الوجه الخلفي -->
-              <div class="flip-face flip-back absolute inset-0 rounded-3xl p-6 bg-gradient-to-br from-amber-300/15 via-pink-500/20 to-rose-600/25 border border-amber-200/40 flex flex-col items-center justify-center text-center shadow-xl">
-                <span class="text-xs font-bold uppercase
+                  📋 نسخ العبار
