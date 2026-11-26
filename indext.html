@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مفاجأة خاصة لك ✨</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #140915;
+      --bg-plum: #28102b;
+      --rose-glow: #ff5d9e;
+      --gold-soft: #ffd180;
+    }
+
+    body {
+      font-family: 'Cairo', 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255, 93, 158, 0.22), transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(192, 108, 255, 0.18), transparent 42%),
+        radial-gradient(circle at 50% 90%, rgba(255, 166, 128, 0.14), transparent 48%),
+        linear-gradient(145deg, #110712 0%, #230d27 52%, #17091b 100%);
+      min-height: 100vh;
+      color: #fff5f9;
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: rgba(38, 16, 43, 0.68);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 175, 210, 0.18);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 182, 213, 0.16);
+      transition: all 0.25s ease;
+    }
+
+    .glass-pill:hover {
+      background: rgba(255, 93, 158, 0.16);
+      border-color: rgba(255, 128, 179, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .active-tab {
+      background: linear-gradient(135deg, rgba(255, 79, 148, 0.34), rgba(186, 85, 255, 0.28)) !important;
+      border-color: rgba(255, 154, 198, 0.7) !important;
+      box-shadow: 0 8px 25px rgba(255, 79, 148, 0.25);
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1.5deg); }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes shakeSoft {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-7px); }
+      75% { transform: translateX(7px); }
+    }
+
+    .float-slow {
+      animation: floatSlow 4.2s ease-in-out infinite;
+    }
+
+    .pop-in {
+      animation: popIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .shake-soft {
+      animation: shakeSoft 0.32s ease-in-out;
+    }
+
+    /* 3D Flip Card */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+
+    .flip-inner {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .flip-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flip-face {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    #game-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-pink-500/40 selection:text-white">
+  <!-- صوت الخلفية: ضع ملف Christina Perri - A Thousand Years.mp3 بجانب هذا الملف أو غيّر المسار في CONFIG.musicSrc -->
+  <audio id="bg-music" loop preload="auto"></audio>
+
+  <!-- طبقة احتفال القصاصات والقلوب المتطايرة -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- شريط تنبيه لطيف بدل alert -->
+  <div id="toast-banner" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 hidden max-w-[92vw] px-4 py-2.5 rounded-2xl glass-card border border-pink-400/40 text-sm font-semibold text-pink-100 shadow-xl">
+    <span id="toast-text"></span>
+  </div>
+
+  <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+    <!-- الترويسة والتحكم بالصوت والاسم -->
+    <header class="glass-card rounded-3xl p-5 sm:p-7 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-500/15 border border-pink-400/30 text-pink-200 text-xs sm:text-sm font-semibold">
+          <span>✨</span>
+          <span>صُنعت بحب خصيصاً لك</span>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button
+            id="customize-btn"
+            type="button"
+            class="glass-pill px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold text-pink-100 flex items-center gap-1.5 cursor-pointer"
+            title="تخصيص الاسم أو الرمز السري أو رابط الأغنية"
+          >
+            <span>✏️</span>
+            <span>تخصيص سريع</span>
+          </button>
+
+          <button
+            id="sound-toggle-btn"
+            type="button"
+            class="glass-pill px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold text-pink-100 flex items-center gap-1.5 cursor-pointer"
+            aria-pressed="true"
+          >
+            <span id="sound-icon">🔊</span>
+            <span id="sound-label">الصوت مفعّل</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- شارة صغيرة توضح اسم الأغنية الخلفية -->
+      <div class="flex items-center justify-center mb-3">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-pink-300/20 text-xs text-pink-200/85">
+          <span>🎵</span>
+          <span>موسيقى الخلفية: Christina Perri - A Thousand Years</span>
+        </div>
+      </div>
+
+      <div class="text-center space-y-2">
+        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-l from-pink-200 via-rose-300 to-amber-200 bg-clip-text text-transparent">
+          مرحباً <span id="her-name-display">يا أغلى من في حياتي</span> 💕
+        </h1>
+        <p class="text-sm sm:text-base text-pink-100/80 max-w-2xl mx-auto leading-relaxed">
+          اختر الفكرة اللي ودك تبدأ فيها الآن؛ كل قسم مخبّي لمسة مختلفة ومفاجأة لطيفة مصممة لك.
+        </p>
+      </div>
+
+      <!-- لوحة تخصيص سريعة قابلة للفتح والإغلاق -->
+      <div id="customize-panel" class="hidden mt-5 pt-5 border-t border-pink-300/15 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pop-in">
+        <div>
+          <label for="input-her-name" class="block text-xs text-pink-200/80 mb-1.5">اسمها أو لقبها</label>
+          <input
+            id="input-her-name"
+            type="text"
+            class="w-full px-3.5 py-2 rounded-xl bg-black/30 border border-pink-300/20 text-sm text-white focus:outline-none focus:border-pink-400"
+            placeholder="مثال: سارة / حبيبتي"
+          />
+        </div>
+        <div>
+          <label for="input-passcode" class="block text-xs text-pink-200/80 mb-1.5">كلمة السر لقسم الرسالة</label>
+          <input
+            id="input-passcode"
+            type="text"
+            class="w-full px-3.5 py-2 rounded-xl bg-black/30 border border-pink-300/20 text-sm text-white focus:outline-none focus:border-pink-400"
+            placeholder="مثال: 0710 أو قمر"
+          />
+        </div>
+        <div>
+          <label for="input-music-src" class="block text-xs text-pink-200/80 mb-1.5">ملف أو رابط الأغنية (MP3)</label>
+          <input
+            id="input-music-src"
+            type="text"
+            class="w-full px-3.5 py-2 rounded-xl bg-black/30 border border-pink-300/20 text-sm text-white focus:outline-none focus:border-pink-400"
+            placeholder="A Thousand Years.mp3"
+          />
+        </div>
+        <div class="flex items-end gap-2">
+          <button
+            id="save-custom-btn"
+            type="button"
+            class="w-full py-2 px-4 rounded-xl bg-gradient-to-l from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-sm font-bold text-white shadow-lg shadow-pink-500/25 transition cursor-pointer"
+          >
+            حفظ التغييرات
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- مبدّل الأفكار الأربع -->
+    <nav aria-label="أفكار المفاجأة" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <button
+        type="button"
+        data-idea="jar"
+        class="idea-tab active-tab glass-pill rounded-2xl p-3.5 text-right flex items-center gap-3 cursor-pointer"
+      >
+        <span class="text-2xl shrink-0">🫙</span>
+        <div>
+          <div class="text-sm font-bold text-white">جرة الحب</div>
+          <div class="text-xs text-pink-200/75">اسحبي قصاصة لطيفة</div>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        data-idea="lock"
+        class="idea-tab glass-pill rounded-2xl p-3.5 text-right flex items-center gap-3 cursor-pointer"
+      >
+        <span class="text-2xl shrink-0">🔐</span>
+        <div>
+          <div class="text-sm font-bold text-white">قفل الرسالة</div>
+          <div class="text-xs text-pink-200/75">كلمة سر لرسالة خاصة</div>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        data-idea="reasons"
+        class="idea-tab glass-pill rounded-2xl p-3.5 text-right flex items-center gap-3 cursor-pointer"
+      >
+        <span class="text-2xl shrink-0">🃏</span>
+        <div>
+          <div class="text-sm font-bold text-white">ليش أحبك؟</div>
+          <div class="text-xs text-pink-200/75">بطاقات تقلّب وتتحرك</div>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        data-idea="game"
+        class="idea-tab glass-pill rounded-2xl p-3.5 text-right flex items-center gap-3 cursor-pointer"
+      >
+        <span class="text-2xl shrink-0">🎮</span>
+        <div>
+          <div class="text-sm font-bold text-white">صيد القلوب</div>
+          <div class="text-xs text-pink-200/75">لعبة سريعة لفتح مفاجأة</div>
+        </div>
+      </button>
+    </nav>
+
+    <!-- حاوية المحتوى التفاعلي -->
+    <main class="glass-card rounded-3xl p-5 sm:p-8 min-h-[430px] flex flex-col justify-between">
+      <!-- الفكرة 1: جرة الحب والقصاصات المضيئة -->
+      <section id="panel-jar" class="idea-panel space-y-6 pop-in">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-pink-300/15 pb-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-pink-100">🫙 جرة الملاحظات الحلوة</h2>
+            <p class="text-sm text-pink-200/75 mt-1">كل ضغطة تطلع لك قصاصة مضيئة من قلبي ومعها احتفال خفيف.</p>
+          </div>
+          <span id="jar-counter" class="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-pink-500/20 border border-pink-400/30 text-xs font-bold text-pink-200">
+            تم سحب 0 قصاصة
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center py-2">
+          <!-- الجرة التفاعلية -->
+          <div class="md:col-span-5 flex flex-col items-center justify-center">
+            <button
+              id="pull-note-btn"
+              type="button"
+              class="group relative w-44 h-52 rounded-[2.2rem] bg-gradient-to-b from-pink-400/20 via-rose-500/15 to-purple-900/30 border-2 border-pink-300/35 hover:border-pink-300/80 shadow-[0_0_40px_rgba(255,93,158,0.22)] flex flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 float-slow cursor-pointer"
+            >
+              <span class="w-24 h-4 -mt-6 rounded-full bg-gradient-to-r from-amber-200/50 via-pink-200/60 to-amber-200/50 border border-white/30 shadow-md"></span>
+              <span class="text-5xl mt-2 group-hover:scale-110 transition-transform">💌</span>
+              <span class="text-sm font-extrabold text-white px-3 text-center">اسحبي قصاصة</span>
+              <span class="text-[11px] text-pink-200/80">اضغطي هنا</span>
+            </button>
+          </div>
+
+          <!-- بطاقة القصاصة المضيئة -->
+          <div class="md:col-span-7">
+            <div id="note-card" class="rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-pink-500/15 via-purple-500/10 to-amber-400/10 border border-pink-300/25 min-h-[210px] flex flex-col justify-between">
+              <div class="flex items-center justify-between text-xs text-pink-200/75">
+                <span id="note-tag" class="px-3 py-1 rounded-full bg-white/10 font-semibold">✨ في انتظار أول سحبة</span>
+                <span id="note-number">#00</span>
+              </div>
+
+              <p id="note-text" class="text-lg sm:text-xl font-bold text-white leading-relaxed my-5 text-center">
+                اضغطي على الجرة حتى تطلع لك أول رسالة لطيفة مخبّأة لك اليوم.
+              </p>
+
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
+                <button
+                  id="copy-note-btn"
+                  type="button"
+                  class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-pink-100 transition cursor-pointer"
+                >
+                  📋 نسخ العبارة
+                </button>
+                <button
+                  id="next-note-btn"
+                  type="button"
+                  class="px-4 py-1.5 rounded-xl bg-gradient-to-l from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-xs font-bold text-white transition cursor-pointer"
+                >
+                  قصاصة جديدة ✨
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- الفكرة 2: قفل كلمة السر لرسالة حب -->
+      <section id="panel-lock" class="idea-panel hidden space-y-6 pop-in">
+        <div class="border-b border-pink-300/15 pb-4">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-pink-100">🔐 قفل الرسالة السرية</h2>
+          <p class="text-sm text-pink-200/75 mt-1">اكتبي كلمة السر أو الرمز البسيط حتى تفتح الرسالة المخبّأة لك.</p>
+        </div>
+
+        <div id="lock-screen" class="max-w-md mx-auto py-4 text-center space-y-5">
+          <div class="w-20 h-20 mx-auto rounded-3xl bg-pink-500/15 border border-pink-300/30 flex items-center justify-center text-4xl shadow-lg shadow-pink-500/15">
+            🗝️
+          </div>
+
+          <div class="space-y-1.5">
+            <h3 class="text-lg font-bold text-white">أدخلي كلمة السر</h3>
+            <p class="text-xs sm:text-sm text-pink-200/80">
+              تلميح: الرمز الافتراضي هو <span id="passcode-hint-badge" class="px-2 py-0.5 rounded-md bg-pink-500/25 text-pink-100 font-bold">0710</span> (ويمكنك تغييره من التخصيص السريع).
+            </p>
+          </div>
+
+          <form id="passcode-form" class="space-y-3">
+            <input
+              id="passcode-input"
+              type="text"
+              autocomplete="off"
+              placeholder="اكتبي الرمز هنا..."
+              class="w-full text-center text-lg tracking-widest font-bold px-4 py-3 rounded-2xl bg-black/35 border border-pink-300/25 text-white placeholder:text-pink-200/35 focus:outline-none focus:border-pink-400"
+            />
+            <p id="passcode-error" class="hidden text-xs font-semibold text-rose-300">
+              الرمز غير مطابق، جرّبي مرة ثانية 💕
+            </p>
+            <button
+              type="submit"
+              class="w-full py-3 rounded-2xl bg-gradient-to-l from-pink-500 via-rose-500 to-purple-500 hover:brightness-110 font-extrabold text-white shadow-lg shadow-pink-500/25 transition cursor-pointer"
+            >
+              فتح الرسالة ✨
+            </button>
+          </form>
+        </div>
+
+        <div id="unlocked-letter" class="hidden max-w-2xl mx-auto rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-rose-500/15 via-pink-500/10 to-amber-300/10 border border-pink-300/30 space-y-4 pop-in">
+          <div class="flex items-center justify-between">
+            <span class="px-3 py-1 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-emerald-200 text-xs font-bold">
+              🔓 تم فتح الرسالة بنجاح
+            </span>
+            <button
+              id="lock-again-btn"
+              type="button"
+              class="text-xs text-pink-200/75 hover:text-white underline cursor-pointer"
+            >
+              إعادة القفل
+            </button>
+          </div>
+
+          <h3 class="text-xl sm:text-2xl font-extrabold text-pink-100">
+            إلى <span class="her-name-inline">أجمل إنسانة</span>،
+          </h3>
+
+          <div class="space-y-3 text-sm sm:text-base text-pink-50/90 leading-loose">
+            <p>
+              يمكن تكون هذه صفحة صغيرة وبسيطة، بس حبيت أخلي فيها إحساس صادق يذكّرك قد إيش وجودك يفرق معي في كل يوم عادي وفي كل لحظة حلوة.
+            </p>
+            <p>
+              أحب ضحكتك، وأحب تفاصيلك، وأحب كيف إن الكلام معك يهدّي البال ويخلي الوقت يمر بدون ما نحس. مهما انشغلنا أو تباعدت المشاوير، تبقين الأقرب والأغلى دائماً.
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-white/10 flex items-center justify-between text-sm font-bold text-pink-200">
+            <span>بكل حب وامتنان ❤️</span>
+            <span>دائماً معك</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- الفكرة 3: أسباب تجعلني أحبك (بطاقات تقليب تفاعلية) -->
+      <section id="panel-reasons" class="idea-panel hidden space-y-6 pop-in">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-pink-300/15 pb-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-pink-100">🃏 أسباب تخلي قلبي يختارك</h2>
+            <p class="text-sm text-pink-200/75 mt-1">اضغطي على البطاقة لتقليبها وقراءة السبب، أو تنقلي بين البطاقات.</p>
+          </div>
+          <span id="reason-progress" class="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-300/30 text-xs font-bold text-pink-100">
+            بطاقة 1 من 5
+          </span>
+        </div>
+
+        <div class="max-w-lg mx-auto py-2 space-y-5">
+          <div id="reason-flip-container" class="perspective-1000 cursor-pointer" role="button" tabindex="0" aria-label="اقلب البطاقة">
+            <div id="reason-flip-inner" class="flip-inner h-60 sm:h-64 w-full">
+              <!-- الوجه الأمامي -->
+              <div class="flip-face absolute inset-0 rounded-3xl p-6 bg-gradient-to-br from-pink-500/25 via-rose-500/15 to-purple-600/25 border border-pink-300/35 flex flex-col items-center justify-center text-center shadow-xl">
+                <span id="reason-emoji" class="text-5xl mb-3">🌸</span>
+                <span id="reason-title" class="text-xl sm:text-2xl font-extrabold text-white">السبب الأول</span>
+                <span class="mt-2 text-xs text-pink-200/80">اضغطي لقلب البطاقة</span>
+              </div>
+
+              <!-- الوجه الخلفي -->
+              <div class="flip-face flip-back absolute inset-0 rounded-3xl p-6 bg-gradient-to-br from-amber-300/15 via-pink-500/20 to-rose-600/25 border border-amber-200/40 flex flex-col items-center justify-center text-center shadow-xl">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-200 mb-2">لأنك كذا ❤️</span>
+                <p id="reason-body" class="text-base sm:text-lg font-bold text-white leading-relaxed">
+                  حضورك يعطي للمكان طمأنينة مو طبيعية، وصوتك لحاله يبدّل مزاجي للأجمل.
+                </p>
+                <span class="mt-4 text-xs text-pink-200/75">اضغطي للعودة للوجه الأمامي</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <button
+              id="prev-reason-btn"
+              type="button"
+              class="px-4 py-2.5 rounded-2xl glass-pill text-sm font-bold text-pink-100 cursor-pointer"
+            >
+              → السابقة
+            </button>
+            <button
+              id="flip-reason-btn"
+              type="button"
+              class="px-5 py-2.5 rounded-2xl bg-gradient-to-l from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-sm font-bold text-white shadow-lg shadow-pink-500/20 transition cursor-pointer"
+            >
+              🔄 اقلبي البطاقة
+            </button>
+            <button
+              id="next-reason-btn"
+              type="button"
+              class="px-4 py-2.5 rounded-2xl glass-pill text-sm font-bold text-pink-100 cursor-pointer"
+            >
+              التالية ←
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- الفكرة 4: لعبة صيد القلوب السريعة -->
+      <section id="panel-game" class="idea-panel hidden space-y-5 pop-in">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-pink-300/15 pb-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-pink-100">🎮 لعبة صيد القلوب</h2>
+            <p class="text-sm text-pink-200/75 mt-1">اجمعي <span class="text-pink-200 font-bold">8 قلوب</span> قبل انتهاء الوقت لفتح الرسالة الختامية!</p>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs sm:text-sm font-extrabold">
+            <span class="px-3 py-1.5 rounded-xl bg-pink-500/20 border border-pink-300/30 text-pink-100">
+              القلوب: <span id="game-score">0</span> / 8
+            </span>
+            <span class="px-3 py-1.5 rounded-xl bg-amber-400/15 border border-amber-300/30 text-amber-200">
+              الوقت: <span id="game-time">20</span>ث
+            </span>
+          </div>
+        </div>
+
+        <div class="relative w-full h-72 sm:h-80 rounded-3xl overflow-hidden bg-gradient-to-b from-[#2b1033] via-[#1c0a24] to-[#120617] border border-pink-300/25">
+          <canvas id="game-canvas"></canvas>
+
+          <!-- طبقة البداية أو النتيجة -->
+          <div id="game-overlay" class="absolute inset-0 bg-black/55 backdrop-blur-sm flex flex-col items-center justify-center p-5 text-center space-y-3">
+            <span id="overlay-emoji" class="text-4xl">💖</span>
+            <h3 id="overlay-title" class="text-lg sm:text-xl font-extrabold text-white">مستعدة لصيد القلوب؟</h3>
+            <p id="overlay-desc" class="text-xs sm:text-sm text-pink-100/80 max-w-md">
+              حرّكي السلة بالماوس أو اللمس أو الأسهم لالتقاط القلوب الوردية والذهبية.
+            </p>
+            <button
+              id="start-game-btn"
+              type="button"
+              class="px-6 py-2.5 rounded-2xl bg-gradient-to-l from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-sm font-extrabold text-white shadow-lg shadow-pink-500/30 transition cursor-pointer"
+            >
+              ابدئي اللعب الآن
+            </button>
+          </div>
+        </div>
+
+        <!-- رسالة النهاية عند الفوز -->
+        <div id="game-win-card" class="hidden rounded-2xl p-5 bg-gradient-to-r from-pink-500/20 via-rose-500/15 to-amber-300/15 border border-amber-200/40 text-center space-y-1.5 pop-in">
+          <div class="text-base sm:text-lg font-extrabold text-amber-200">🎉 كفو عليك! فتحتِ المفاجأة الختامية</div>
+          <p class="text-sm text-white">
+            مثل ما صدتِ كل هالقلوب، قلبي متعلّق فيك بكل تفاصيلك يا <span class="her-name-inline font-bold text-pink-200">أغلى الناس</span> ❤️
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-6 text-center text-xs text-pink-200/55">
+      ضع ملف الأغنية (Christina Perri - A Thousand Years.mp3) في نفس مجلد الصفحة أو حدّد مساره من «تخصيص سريع».
+    </footer>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1) إعدادات قابلة للتعديل بسهولة (الاسم، كلمة السر، الأغنية، القصاصات، الأسباب)
+    // =========================================================================
+    const CONFIG = {
+      herName: "يا أغلى من في حياتي",
+      passcode: "0710",
+      musicSrc: "Christina Perri - A Thousand Years.mp3",
+      musicVolume: 0.35,
+      notes: [
+        { tag: "صباح/مساء الخير", text: "وجودك لحاله يخلي يومي أهدى وأجمل من أي شيء ثاني." },
+        { tag: "همسة صغيرة", text: "أكثر شيء أحبه فيك إنك تخلين التفاصيل الصغيرة تسوى الدنيا." },
+        { tag: "ابتسامتك", text: "لو فيه شيء يختصر الفرح بسرعة، فهو ضحكتك وروقانك." },
+        { tag: "قربك", text: "حتى في الأيام الزحمة، مجرد التفكير فيك يريح القلب." },
+        { tag: "وعد لطيف", text: "دائماً راح أكون لك سند، وصاحب، وأول من يفرح لفرحك." },
+        { tag: "ذكرى حلوة", text: "أحلى قرار وأجمل صدفة صارت لي هي معرفتك والقرب منك." }
+      ],
+      reasons: [
+        { emoji: "✨", title: "السبب الأول: روحك الخفيفة", body: "وجودك يعطي للمكان طمأنينة نادرة، ومعك حتى الأيام العادية تصير لها نكهة مختلفة." },
+        { emoji: "💬", title: "السبب الثاني: سوالفك وضحكتك", body: "الكلام معك يمر بسرعة بدون ما أحس بالوقت، وضحكتك تعدي أي ضيقة في ثواني." },
+        { emoji: "🫶", title: "السبب الثالث: اهتمامك الصادق", body: "تنتبهين لأشياء بسيطة كثيرين يمرون عليها، وهذا يخليني أحس بقيمة وجودك كل يوم." },
+        { emoji: "🌙", title: "السبب الرابع: السكينة معك", body: "في لحظات التعب أو التشتت، وجودك جنبي يكون أهدى وأجمل ملجأ." },
+        { emoji: "💖", title: "السبب الخامس: لأنك أنتِ", body: "مو محتاجة سبب معقد؛ أحياناً الحب يكون ببساطة إنك تكونين موجودة في حياتي." }
+      ]
+    };
+
+    // =========================================================================
+    // 2) مشغل موسيقى الخلفية + مؤثرات صوتية ناعمة
+    // =========================================================================
+    const bgMusic = document.getElementById("bg-music");
+
+    function applyMusicSource() {
+      if (!CONFIG.musicSrc) return;
+      if (bgMusic.getAttribute("src") !== CONFIG.musicSrc) {
+        bgMusic.src = CONFIG.musicSrc;
+        bgMusic.load();
+      }
+      bgMusic.volume = CONFIG.musicVolume;
+    }
+
+    function syncBackgroundMusic(showMissingHint = false) {
+      applyMusicSource();
+      if (!sound.enabled) {
+        bgMusic.pause();
+        return;
+      }
+      if (!CONFIG.musicSrc) return;
+
+      const playPromise = bgMusic.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {
+          if (showMissingHint) {
+            showToast("تأكد من وجود ملف الأغنية بجانب الصفحة 🎵");
+          }
+        });
+      }
+    }
+
+    class GentleSoundEngine {
+      constructor() {
+        this.enabled = true;
+        this.ctx = null;
+      }
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      playTone(freq = 587.33, duration = 0.22, type = "sine", volume = 0.08, delay = 0) {
+        if (!this.enabled) return;
+        try {
+          this.ensureContext();
+          if (!this.ctx) return;
+
+          const startTime = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, startTime);
+
+          gain.gain.setValueAtTime(0.0001, startTime);
+          gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(startTime);
+          osc.stop(startTime + duration + 0.02);
+        } catch (err) {
+          // تجاهل أخطاء الصوت في المتصفحات المقيدة
+        }
+      }
+
+      pop() {
+        this.playTone(620, 0.14, "sine", 0.07, 0);
+        this.playTone(880, 0.18, "triangle", 0.05, 0.05);
+      }
+
+      unlock() {
+        this.playTone(523.25, 0.16, "sine", 0.07, 0);
+        this.playTone(659.25, 0.18, "sine", 0.07, 0.08);
+        this.playTone(783.99, 0.26, "triangle", 0.08, 0.16);
+      }
+
+      error() {
+        this.playTone(230, 0.18, "sawtooth", 0.04, 0);
+      }
+
+      catchHeart(golden = false) {
+        if (golden) {
+          this.playTone(784, 0.14, "triangle", 0.07, 0);
+          this.playTone(1046.5, 0.2, "sine", 0.07, 0.06);
+        } else {
+          this.playTone(660, 0.12, "sine", 0.06, 0);
+        }
+      }
+    }
+
+    const sound = new GentleSoundEngine();
+
+    // تشغيل الأغنية تلقائياً عند أول تفاعل للمستخدم إذا كان الصوت مفعلاً
+    function handleFirstUserInteraction() {
+      if (sound.enabled && bgMusic.paused) {
+        syncBackgroundMusic(false);
+      }
+    }
+    window.addEventListener("pointerdown", handleFirstUserInteraction, { once: true });
+    window.addEventListener("keydown", handleFirstUserInteraction, { once: true });
+
+    // =========================================================================
+    // 3) احتفال القصاصات والقلوب المتطايرة على الشاشة
+    // =========================================================================
+    const confettiCanvas = document.getElementById("confetti-canvas");
+    const confettiCtx = confettiCanvas.getContext("2d");
+    let confettiParticles = [];
+
+    function resizeConfettiCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+
+    function launchConfetti(count = 55) {
+      const colors = ["#ff5d9e", "#ffd180", "#c06cff", "#ff9ec4", "#fff0f6"];
+      for (let i = 0; i < count; i++) {
+        confettiParticles.push({
+          x: window.innerWidth * (0.3 + Math.random() * 0.4),
+          y: window.innerHeight * 0.45,
+          vx: (Math.random() - 0.5) * 9,
+          vy: -Math.random() * 8 - 3,
+          size: 6 + Math.random() * 7,
+          rotation: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.22,
+          alpha: 1,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          isHeart: Math.random() > 0.55
+        });
+      }
+    }
+
+    function drawMiniHeart(ctx, x, y, size, color, alpha) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, alpha);
+      ctx.translate(x, y);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      const s = size * 0.55;
+      ctx.moveTo(0, s * 0.7);
+      ctx.bezierCurveTo(-s * 1.2, -s * 0.1, -s * 0.65, -s * 1.1, 0, -s * 0.35);
+      ctx.bezierCurveTo(s * 0.65, -s * 1.1, s * 1.2, -s * 0.1, 0, s * 0.7);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function updateConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      confettiParticles = confettiParticles.filter((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.22;
+        p.vx *= 0.99;
+        p.rotation += p.vr;
+        p.alpha -= 0.014;
+
+        if (p.alpha <= 0) return false;
+
+        if (p.isHeart) {
+          drawMiniHeart(confettiCtx, p.x, p.y, p.size, p.color, p.alpha);
+        } else {
+          confettiCtx.save();
+          confettiCtx.globalAlpha = Math.max(0, p.alpha);
+          confettiCtx.translate(p.x, p.y);
+          confettiCtx.rotate(p.rotation);
+          confettiCtx.fillStyle = p.color;
+          confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+          confettiCtx.restore();
+        }
+        return true;
+      });
+      requestAnimationFrame(updateConfetti);
+    }
+
+    // =========================================================================
+    // 4) واجهة التخصيص والتنبيه اللطيف والصوت
+    // =========================================================================
+    let toastTimer = null;
+    function showToast(msg) {
+      const banner = document.getElementById("toast-banner");
+      const text = document.getElementById("toast-text");
+      text.textContent = msg;
+      banner.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        banner.classList.add("hidden");
+      }, 2400);
+    }
+
+    function applyConfigToDOM() {
+      document.getElementById("her-name-display").textContent = CONFIG.herName;
+      document.querySelectorAll(".her-name-inline").forEach((el) => {
+        el.textContent = CONFIG.herName;
+      });
+      document.getElementById("passcode-hint-badge").textContent = CONFIG.passcode;
+      document.getElementById("input-her-name").value = CONFIG.herName;
+      document.getElementById("input-passcode").value = CONFIG.passcode;
+      document.getElementById("input-music-src").value = CONFIG.musicSrc;
+      applyMusicSource();
+    }
+
+    document.getElementById("sound-toggle-btn").addEventListener("click", () => {
+      sound.enabled = !sound.enabled;
+      const btn = document.getElementById("sound-toggle-btn");
+      document.getElementById("sound-icon").textContent = sound.enabled ? "🔊" : "🔇";
+      document.getElementById("sound-label").textContent = sound.enabled ? "الصوت مفعّل" : "الصوت مكتوم";
+      btn.setAttribute("aria-pressed", String(sound.enabled));
+      if (sound.enabled) {
+        sound.pop();
+        syncBackgroundMusic(true);
+      } else {
+        bgMusic.pause();
+      }
+    });
+
+    document.getElementById("customize-btn").addEventListener("click", () => {
+      sound.pop();
+      document.getElementById("customize-panel").classList.toggle("hidden");
+    });
+
+    document.getElementById("save-custom-btn").addEventListener("click", () => {
+      const newName = document.getElementById("input-her-name").value.trim();
+      const newPass = document.getElementById("input-passcode").value.trim();
+      const newMusic = document.getElementById("input-music-src").value.trim();
+      if (newName) CONFIG.herName = newName;
+      if (newPass) CONFIG.passcode = newPass;
+      if (newMusic) CONFIG.musicSrc = newMusic;
+      applyConfigToDOM();
+      syncBackgroundMusic(false);
+      document.getElementById("customize-panel").classList.add("hidden");
+      sound.unlock();
+      showToast("تم حفظ التخصيص بنجاح ✨");
+    });
+
+    // =========================================================================
+    // 5) التبديل بين الأفكار الأربع
+    // =========================================================================
+    const tabs = document.querySelectorAll(".idea-tab");
+    const panels = {
+      jar: document.getElementById("panel-jar"),
+      lock: document.getElementById("panel-lock"),
+      reasons: document.getElementById("panel-reasons"),
+      game: document.getElementById("panel-game")
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.idea;
+        tabs.forEach((t) => t.classList.remove("active-tab"));
+        tab.classList.add("active-tab");
+
+        Object.keys(panels).forEach((key) => {
+          panels[key].classList.toggle("hidden", key !== target);
+        });
+
+        sound.pop();
+        if (target === "game") {
+          resizeGameCanvas();
+        }
+      });
+    });
+
+    // =========================================================================
+    // 6) الفكرة 1: جرة الحب والقصاصات
+    // =========================================================================
+    let pulledCount = 0;
+    let lastNoteIdx = -1;
+
+    function pullSweetNote() {
+      if (!CONFIG.notes.length) return;
+      let idx = Math.floor(Math.random() * CONFIG.notes.length);
+      if (CONFIG.notes.length > 1 && idx === lastNoteIdx) {
+        idx = (idx + 1) % CONFIG.notes.length;
+      }
+      lastNoteIdx = idx;
+      pulledCount++;
+
+      const item = CONFIG.notes[idx];
+      const card = document.getElementById("note-card");
+      card.classList.remove("pop-in");
+      void card.offsetWidth;
+      card.classList.add("pop-in");
+
+      document.getElementById("note-tag").textContent = `💌 ${item.tag}`;
+      document.getElementById("note-number").textContent = `#${String(pulledCount).padStart(2, "0")}`;
+      document.getElementById("note-text").textContent = item.text;
+      document.getElementById("jar-counter").textContent = `تم سحب ${pulledCount} قصاصة`;
+
+      sound.pop();
+      launchConfetti(32);
+    }
+
+    document.getElementById("pull-note-btn").addEventListener("click", pullSweetNote);
+    document.getElementById("next-note-btn").addEventListener("click", pullSweetNote);
+
+    document.getElementById("copy-note-btn").addEventListener("click", () => {
+      const textToCopy = document.getElementById("note-text").textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(
+          () => showToast("تم نسخ القصاصة 📋"),
+          () => fallbackCopyText(textToCopy)
+        );
+      } else {
+        fallbackCopyText(textToCopy);
+      }
+    });
+
+    function fallbackCopyText(textToCopy) {
+      const tempInput = document.createElement("textarea");
+      tempInput.value = textToCopy;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand("copy");
+        showToast("تم نسخ القصاصة 📋");
+      } catch (e) {
+        showToast("تعذر النسخ تلقائياً");
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    // =========================================================================
+    // 7) الفكرة 2: قفل كلمة السر لرسالة الحب
+    // =========================================================================
+    document.getElementById("passcode-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("passcode-input");
+      const errorEl = document.getElementById("passcode-error");
+      const entered = input.value.trim().toLowerCase();
+      const expected = CONFIG.passcode.trim().toLowerCase();
+
+      if (entered === expected) {
+        errorEl.classList.add("hidden");
+        document.getElementById("lock-screen").classList.add("hidden");
+        document.getElementById("unlocked-letter").classList.remove("hidden");
+        sound.unlock();
+        launchConfetti(65);
+      } else {
+        errorEl.classList.remove("hidden");
+        input.classList.remove("shake-soft");
+        void input.offsetWidth;
+        input.classList.add("shake-soft");
+        sound.error();
+      }
+    });
+
+    document.getElementById("lock-again-btn").addEventListener("click", () => {
+      document.getElementById("passcode-input").value = "";
+      document.getElementById("unlocked-letter").classList.add("hidden");
+      document.getElementById("lock-screen").classList.remove("hidden");
+      sound.pop();
+    });
+
+    // =========================================================================
+    // 8) الفكرة 3: بطاقات أسباب تجعلني أحبك
+    // =========================================================================
+    let reasonIndex = 0;
+    let isFlipped = false;
+
+    function renderReasonCard(resetFlip = true) {
+      const item = CONFIG.reasons[reasonIndex];
+      document.getElementById("reason-emoji").textContent = item.emoji;
+      document.getElementById("reason-title").textContent = item.title;
+      document.getElementById("reason-body").textContent = item.body;
+      document.getElementById("reason-progress").textContent = `بطاقة ${reasonIndex + 1} من ${CONFIG.reasons.length}`;
+
+      if (resetFlip) {
+        isFlipped = false;
+        document.getElementById("reason-flip-inner").classList.remove("is-flipped");
+      }
+    }
+
+    function toggleFlipReason() {
+      isFlipped = !isFlipped;
+      document.getElementById("reason-flip-inner").classList.toggle("is-flipped", isFlipped);
+      sound.pop();
+    }
+
+    document.getElementById("reason-flip-container").addEventListener("click", toggleFlipReason);
+    document.getElementById("reason-flip-container").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleFlipReason();
+      }
+    });
+    document.getElementById("flip-reason-btn").addEventListener("click", toggleFlipReason);
+
+    document.getElementById("next-reason-btn").addEventListener("click", () => {
+      reasonIndex = (reasonIndex + 1) % CONFIG.reasons.length;
+      renderReasonCard(true);
+      sound.pop();
+    });
+
+    document.getElementById("prev-reason-btn").addEventListener("click", () => {
+      reasonIndex = (reasonIndex - 1 + CONFIG.reasons.length) % CONFIG.reasons.length;
+      renderReasonCard(true);
+      sound.pop();
+    });
+
+    // =========================================================================
+    // 9) الفكرة 4: لعبة صيد القلوب السريعة (Canvas)
+    // =========================================================================
+    const gameCanvas = document.getElementById("game-canvas");
+    const gameCtx = gameCanvas.getContext("2d");
+    const TARGET_HEARTS = 8;
+
+    let gameState = {
+      running: false,
+      score: 0,
+      timeLeft: 20,
+      basketX: 150,
+      basketWidth: 88,
+      hearts: [],
+      spawnAccumulator: 0,
+      lastTimestamp: 0,
+      countdownId: null,
+      keys: { left: false, right: false }
+    };
+
+    function resizeGameCanvas() {
+      const parent = gameCanvas.parentElement;
+      if (!parent) return;
+      gameCanvas.width = parent.clientWidth;
+      gameCanvas.height = parent.clientHeight;
+      gameState.basketX = Math.min(
+        Math.max(gameState.basketWidth / 2 + 8, gameState.basketX),
+        Math.max(gameState.basketWidth / 2 + 8, gameCanvas.width - gameState.basketWidth / 2 - 8)
+      );
+    }
+
+    function startCatchGame() {
+      resizeGameCanvas();
+      gameState.running = true;
+      gameState.score = 0;
+      gameState.timeLeft = 20;
+      gameState.hearts = [];
+      gameState.spawnAccumulator = 0;
+      gameState.basketX = gameCanvas.width / 2;
+
+      document.getElementById("game-score").textContent = "0";
+      document.getElementById("game-time").textContent = "20";
+      document.getElementById("game-overlay").classList.add("hidden");
+      document.getElementById("game-win-card").classList.add("hidden");
+
+      clearInterval(gameState.countdownId);
+      gameState.countdownId = setInterval(() => {
+        if (!gameState.running) return;
+        gameState.timeLeft--;
+        document.getElementById("game-time").textContent = String(Math.max(0, gameState.timeLeft));
+        if (gameState.timeLeft <= 0) {
+          finishCatchGame(false);
+        }
+      }, 1000);
+
+      sound.pop();
+    }
+
+    function finishCatchGame(won) {
+      gameState.running = false;
+      clearInterval(gameState.countdownId);
+
+      const overlay = document.getElementById("game-overlay");
+      const emoji = document.getElementById("overlay-emoji");
+      const title = document.getElementById("overlay-title");
+      const desc = document.getElementById("overlay-desc");
+      const startBtn = document.getElementById("start-game-btn");
+
+      if (won) {
+        emoji.textContent = "🏆";
+        title.textContent = "مبروك! جمعتِ كل القلوب المطلوبة";
+        desc.textContent = "الرسالة الختامية ظهرت تحت اللعبة، وتقدرين تلعبين مرة ثانية بأي وقت.";
+        startBtn.textContent = "العب مرة ثانية";
+        document.getElementById("game-win-card").classList.remove("hidden");
+        sound.unlock();
+        launchConfetti(75);
+      } else {
+        emoji.textContent = "⏳";
+        title.textContent = "انتهى الوقت، قريبة جداً!";
+        desc.textContent = `جمعتِ ${gameState.score} من أصل ${TARGET_HEARTS} قلوب. جرّبي مرة ثانية الحين.`;
+        startBtn.textContent = "إعادة المحاولة";
+        sound.pop();
+      }
+
+      overlay.classList.remove("hidden");
+    }
+
+    function spawnFallingHeart() {
+      const margin = 28;
+      const isGolden = Math.random() < 0.25;
+      gameState.hearts.push({
+        x: margin + Math.random() * Math.max(20, gameCanvas.width - margin * 2),
+        y: -20,
+        speed: (1.8 + Math.random() * 1.9) * (gameCanvas.height / 300),
+        size: isGolden ? 20 : 17,
+        golden: isGolden,
+        swayPhase: Math.random() * Math.PI * 2
+      });
+    }
+
+    function updateAndDrawGame(timestamp) {
+      if (!gameState.lastTimestamp) gameState.lastTimestamp = timestamp;
+      const dt = Math.min(0.05, (timestamp - gameState.lastTimestamp) / 1000);
+      gameState.lastTimestamp = timestamp;
+
+      gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+      if (gameState.running) {
+        const moveSpeed = 360 * dt;
+        if (gameState.keys.left) gameState.basketX -= moveSpeed;
+        if (gameState.keys.right) gameState.basketX += moveSpeed;
+
+        const halfW = gameState.basketWidth / 2;
+        gameState.basketX = Math.max(halfW + 8, Math.min(gameCanvas.width - halfW - 8, gameState.basketX));
+
+        gameState.spawnAccumulator += dt;
+        if (gameState.spawnAccumulator >= 0.68) {
+          gameState.spawnAccumulator = 0;
+          spawnFallingHeart();
+        }
+
+        const basketY = gameCanvas.height - 34;
+
+        gameState.hearts = gameState.hearts.filter((h) => {
+          h.y += h.speed * 60 * dt;
+          h.swayPhase += 3.5 * dt;
+          const currentX = h.x + Math.sin(h.swayPhase) * 10;
+
+          drawMiniHeart(
+            gameCtx,
+            currentX,
+            h.y,
+            h.size,
+            h.golden ? "#ffd180" : "#ff5d9e",
+            1
+          );
+
+          // التحقق من الالتقاط بالسلة
+          const hitBasket =
+            Math.abs(currentX - gameState.basketX) < halfW + h.size * 0.55 &&
+            Math.abs(h.y - basketY) < 24;
+
+          if (hitBasket) {
+            gameState.score += h.golden ? 2 : 1;
+            if (gameState.score > TARGET_HEARTS) gameState.score = TARGET_HEARTS;
+            document.getElementById("game-score").textContent = String(gameState.score);
+            sound.catchHeart(h.golden);
+
+            if (gameState.score >= TARGET_HEARTS) {
+              finishCatchGame(true);
+            }
+            return false;
+          }
+
+          return h.y < gameCanvas.height + 30;
+        });
+      }
+
+      // رسم السلة
+      const bx = gameState.basketX;
+      const by = gameCanvas.height - 34;
+      const bw = gameState.basketWidth;
+
+      gameCtx.save();
+      const grad = gameCtx.createLinearGradient(bx - bw / 2, by - 12, bx + bw / 2, by + 16);
+      grad.addColorStop(0, "#ff7eb3");
+      grad.addColorStop(1, "#b54cff");
+      gameCtx.fillStyle = grad;
+      gameCtx.beginPath();
+      gameCtx.roundRect(bx - bw / 2, by - 10, bw, 22, 11);
+      gameCtx.fill();
+
+      gameCtx.strokeStyle = "rgba(255,255,255,0.45)";
+      gameCtx.lineWidth = 1.5;
+      gameCtx.stroke();
+      gameCtx.restore();
+
+      requestAnimationFrame(updateAndDrawGame);
+    }
+
+    function setBasketFromClientX(clientX) {
+      const rect = gameCanvas.getBoundingClientRect();
+      gameState.basketX = clientX - rect.left;
+    }
+
+    gameCanvas.addEventListener("mousemove", (e) => {
+      if (!gameState.running) return;
+      setBasketFromClientX(e.clientX);
+    });
+
+    gameCanvas.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!gameState.running || !e.touches.length) return;
+        e.preventDefault();
+        setBasketFromClientX(e.touches[0].clientX);
+      },
+      { passive: false }
+    );
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") gameState.keys.left = true;
+      if (e.key === "ArrowRight") gameState.keys.right = true;
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "ArrowLeft") gameState.keys.left = false;
+      if (e.key === "ArrowRight") gameState.keys.right = false;
+    });
+
+    document.getElementById("start-game-btn").addEventListener("click", startCatchGame);
+
+    // =========================================================================
+    // 10) التشغيل الأولي
+    // =========================================================================
+    window.addEventListener("resize", () => {
+      resizeConfettiCanvas();
+      resizeGameCanvas();
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      applyConfigToDOM();
+      renderReasonCard(true);
+      resizeConfettiCanvas();
+      resizeGameCanvas();
+      requestAnimationFrame(updateConfetti);
+      requestAnimationFrame(updateAndDrawGame);
+    });
+  </script>
+</body>
+</html>
