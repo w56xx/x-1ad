@@ -124,7 +124,7 @@
   </style>
 </head>
 <body class="antialiased selection:bg-pink-500/40 selection:text-white">
-  <!-- صوت الخلفية: ضع ملف song.mp3 بجانب هذا الملف أو غيّر المسار في CONFIG.musicSrc -->
+  <!-- صوت الخلفية من ملف الأغنية/الفيديو المرفق -->
   <audio id="bg-music" loop preload="auto"></audio>
 
   <!-- طبقة احتفال القصاصات والقلوب المتطايرة -->
@@ -141,7 +141,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-500/15 border border-pink-400/30 text-pink-200 text-xs sm:text-sm font-semibold">
           <span>✨</span>
-          <span>صُنعت بحب خصيصاً لك</span>
+          <span>صُنعت بحب خصيصاً لك يايمنى</span>
         </div>
 
         <div class="flex items-center gap-2.5">
@@ -149,7 +149,7 @@
             id="customize-btn"
             type="button"
             class="glass-pill px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold text-pink-100 flex items-center gap-1.5 cursor-pointer"
-            title="تخصيص الاسم أو الرمز السري أو رابط الأغنية"
+            title="تخصيص الاسم أو الرمز السري أو ملف الأغنية"
           >
             <span>✏️</span>
             <span>تخصيص سريع</span>
@@ -167,25 +167,20 @@
         </div>
       </div>
 
-      <!-- شارة الأغنية الخلفية مع زر تشغيل/إيقاف مباشر -->
+      <!-- شارة توضح الأغنية الخلفية -->
       <div class="flex items-center justify-center mb-3">
-        <button
-          id="music-play-btn"
-          type="button"
-          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/15 hover:bg-pink-500/25 border border-pink-300/30 text-xs text-pink-100 font-semibold transition cursor-pointer"
-        >
-          <span id="music-status-icon">🎵</span>
-          <span>Christina Perri - A Thousand Years</span>
-          <span id="music-status-text" class="text-pink-200/80">(تشغيل)</span>
-        </button>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-pink-300/20 text-xs text-pink-200/85">
+          <span>🎵</span>
+          <span id="music-track-label">Christina Perri - A Thousand Years</span>
+        </div>
       </div>
 
       <div class="text-center space-y-2">
         <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-l from-pink-200 via-rose-300 to-amber-200 bg-clip-text text-transparent">
-          مرحباً <span id="her-name-display">يارا حبيبة قلبي</span> 💕
+          مرحباً <span id="her-name-display">يايمنى </span> 💕
         </h1>
         <p class="text-sm sm:text-base text-pink-100/80 max-w-2xl mx-auto leading-relaxed">
-          اختر الفكرة اللي ودك تبدأ فيها الآن؛ كل قسم مخبّي لمسة مختلفة ومفاجأة لطيفة مصممة لك.
+          اختاري الي عايزه تبدي بيهو كل قسم مخبّي ليك حاجة احلى.
         </p>
       </div>
 
@@ -210,12 +205,12 @@
           />
         </div>
         <div>
-          <label for="input-music-src" class="block text-xs text-pink-200/80 mb-1.5">ملف أو رابط الأغنية (MP3)</label>
+          <label for="input-music-file" class="block text-xs text-pink-200/80 mb-1.5">اختيار ملف الأغنية (MP3 / MP4)</label>
           <input
-            id="input-music-src"
-            type="text"
-            class="w-full px-3.5 py-2 rounded-xl bg-black/30 border border-pink-300/20 text-sm text-white focus:outline-none focus:border-pink-400"
-            placeholder="song.mp3"
+            id="input-music-file"
+            type="file"
+            accept="audio/*,video/mp4"
+            class="w-full px-2.5 py-1.5 rounded-xl bg-black/30 border border-pink-300/20 text-xs text-pink-100 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:bg-pink-500/30 file:text-pink-100 file:font-semibold hover:file:bg-pink-500/45 focus:outline-none"
           />
         </div>
         <div class="flex items-end gap-2">
@@ -440,7 +435,7 @@
 
               <!-- الوجه الخلفي -->
               <div class="flip-face flip-back absolute inset-0 rounded-3xl p-6 bg-gradient-to-br from-amber-300/15 via-pink-500/20 to-rose-600/25 border border-amber-200/40 flex flex-col items-center justify-center text-center shadow-xl">
-                <span class="text-xs font-bold tracking-wider text-amber-200 mb-2">لأنك كذا ❤️</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-200 mb-2">لأنك كذا ❤️</span>
                 <p id="reason-body" class="text-base sm:text-lg font-bold text-white leading-relaxed">
                   حضورك يعطي للمكان طمأنينة مو طبيعية، وصوتك لحاله يبدّل مزاجي للأجمل.
                 </p>
@@ -524,7 +519,7 @@
     </main>
 
     <footer class="mt-6 text-center text-xs text-pink-200/55">
-      ضع ملف الأغنية (song.mp3) في نفس مجلد الصفحة أو حدّد مساره من «تخصيص سريع».
+      ضع ملف (song.mp4) بجانب الصفحة أو اختره من «تخصيص سريع».
     </footer>
   </div>
 
@@ -533,9 +528,10 @@
     // 1) إعدادات قابلة للتعديل بسهولة (الاسم، كلمة السر، الأغنية، القصاصات، الأسباب)
     // =========================================================================
     const CONFIG = {
-      herName: "يارا حبيبة قلبي",
+      herName: "يارا",
       passcode: "0710",
       musicSrc: "song.mp3",
+      musicTitle: "Christina Perri - A Thousand Years",
       musicVolume: 0.35,
       notes: [
         { tag: "صباح/مساء الخير", text: "وجودك لحاله يخلي يومي أهدى وأجمل من أي شيء ثاني." },
@@ -558,20 +554,7 @@
     // 2) مشغل موسيقى الخلفية + مؤثرات صوتية ناعمة
     // =========================================================================
     const bgMusic = document.getElementById("bg-music");
-
-    function updateMusicButtonUI() {
-      const iconEl = document.getElementById("music-status-icon");
-      const textEl = document.getElementById("music-status-text");
-      if (!iconEl || !textEl) return;
-
-      if (!bgMusic.paused && sound.enabled) {
-        iconEl.textContent = "🎶";
-        textEl.textContent = "(شغالة الآن)";
-      } else {
-        iconEl.textContent = "🎵";
-        textEl.textContent = "(اضغط للتشغيل)";
-      }
-    }
+    let customObjectUrl = null;
 
     function applyMusicSource() {
       if (!CONFIG.musicSrc) return;
@@ -580,36 +563,26 @@
         bgMusic.load();
       }
       bgMusic.volume = CONFIG.musicVolume;
+      document.getElementById("music-track-label").textContent = CONFIG.musicTitle || CONFIG.musicSrc;
     }
 
     function syncBackgroundMusic(showMissingHint = false) {
       applyMusicSource();
       if (!sound.enabled) {
         bgMusic.pause();
-        updateMusicButtonUI();
         return;
       }
       if (!CONFIG.musicSrc) return;
 
       const playPromise = bgMusic.play();
-      if (playPromise && typeof playPromise.then === "function") {
-        playPromise.then(() => {
-          updateMusicButtonUI();
-        }).catch(() => {
-          updateMusicButtonUI();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {
           if (showMissingHint) {
-            showToast("تأكد من وجود ملف song.mp3 بجانب index.html 🎵");
+            showToast("ضع ملف الأغنية بجانب الصفحة أو اختره من التخصيص السريع 🎵");
           }
         });
       }
     }
-
-    bgMusic.addEventListener("play", updateMusicButtonUI);
-    bgMusic.addEventListener("pause", updateMusicButtonUI);
-    bgMusic.addEventListener("error", () => {
-      updateMusicButtonUI();
-      showToast("تعذر تحميل song.mp3 — تأكد من اسمه ورفعه في المستودع 🎵");
-    });
 
     class GentleSoundEngine {
       constructor() {
@@ -690,23 +663,6 @@
     }
     window.addEventListener("pointerdown", handleFirstUserInteraction, { once: true });
     window.addEventListener("keydown", handleFirstUserInteraction, { once: true });
-
-    document.getElementById("music-play-btn").addEventListener("click", () => {
-      applyMusicSource();
-      if (!sound.enabled) {
-        sound.enabled = true;
-        document.getElementById("sound-icon").textContent = "🔊";
-        document.getElementById("sound-label").textContent = "الصوت مفعّل";
-        document.getElementById("sound-toggle-btn").setAttribute("aria-pressed", "true");
-      }
-
-      if (bgMusic.paused) {
-        syncBackgroundMusic(true);
-      } else {
-        bgMusic.pause();
-        updateMusicButtonUI();
-      }
-    });
 
     // =========================================================================
     // 3) احتفال القصاصات والقلوب المتطايرة على الشاشة
@@ -803,7 +759,6 @@
       document.getElementById("passcode-hint-badge").textContent = CONFIG.passcode;
       document.getElementById("input-her-name").value = CONFIG.herName;
       document.getElementById("input-passcode").value = CONFIG.passcode;
-      document.getElementById("input-music-src").value = CONFIG.musicSrc;
       applyMusicSource();
     }
 
@@ -818,7 +773,6 @@
         syncBackgroundMusic(true);
       } else {
         bgMusic.pause();
-        updateMusicButtonUI();
       }
     });
 
@@ -830,15 +784,26 @@
     document.getElementById("save-custom-btn").addEventListener("click", () => {
       const newName = document.getElementById("input-her-name").value.trim();
       const newPass = document.getElementById("input-passcode").value.trim();
-      const newMusic = document.getElementById("input-music-src").value.trim();
+      const fileInput = document.getElementById("input-music-file");
+
       if (newName) CONFIG.herName = newName;
       if (newPass) CONFIG.passcode = newPass;
-      if (newMusic) CONFIG.musicSrc = newMusic;
+
+      if (fileInput.files && fileInput.files[0]) {
+        if (customObjectUrl) {
+          URL.revokeObjectURL(customObjectUrl);
+        }
+        const selectedFile = fileInput.files[0];
+        customObjectUrl = URL.createObjectURL(selectedFile);
+        CONFIG.musicSrc = customObjectUrl;
+        CONFIG.musicTitle = selectedFile.name.replace(/\.[^/.]+$/, "");
+      }
+
       applyConfigToDOM();
       syncBackgroundMusic(true);
       document.getElementById("customize-panel").classList.add("hidden");
       sound.unlock();
-      showToast("تم حفظ التغييرات بنجاح ✨");
+      showToast("تم حفظ التخصيص بنجاح ✨");
     });
 
     // =========================================================================
@@ -1231,10 +1196,10 @@
       renderReasonCard(true);
       resizeConfettiCanvas();
       resizeGameCanvas();
-      updateMusicButtonUI();
       requestAnimationFrame(updateConfetti);
       requestAnimationFrame(updateAndDrawGame);
     });
   </script>
 </body>
 </html>
+```[cite: 1]
